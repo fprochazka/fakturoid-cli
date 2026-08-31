@@ -1,0 +1,50 @@
+[project]
+name = "fakturoidcli"
+version = "0.1.0"
+description = "A command-line interface for Fakturoid"
+readme = "README.md"
+authors = [
+    { name = "Filip Procházka", email = "mr@fprochazka.cz" }
+]
+requires-python = ">=3.11"
+dependencies = [
+    "httpx>=0.28.0",
+    "jsonschema>=4.23.0",
+    "rich>=14.0.0",
+    "tomli-w>=1.2.0",
+    "typer>=0.15.0",
+]
+
+[project.scripts]
+fakturoid = "fakturoidcli.cli:cli"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/fakturoidcli"]
+
+[tool.uv]
+package = true
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+# The plan documents are prose, not source; their code blocks stay as written.
+extend-exclude = [".claude"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "C4", "SIM"]
+
+[tool.ruff.format]
+quote-style = "double"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0.0",
+    "ruff>=0.14.0",
+]
