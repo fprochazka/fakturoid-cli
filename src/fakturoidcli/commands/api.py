@@ -7,46 +7,18 @@ Fakturoid adds later. The request body is sent exactly as it arrives.
 from __future__ import annotations
 
 import json
-import sys
-from pathlib import Path
-from typing import Annotated, Any
+from typing import Annotated
 
 import typer
 
 from ..context import get_context
 from ..errors import UsageError
 from ..output import output_json, stderr_line
+from ..payload import read_json_body
 
 __all__ = ["api_command"]
 
 _ALLOWED_METHODS = ("GET", "POST", "PUT", "PATCH", "DELETE", "HEAD")
-
-
-def _read_request_body(payload: str | None, input_ref: str | None) -> Any | None:
-    """Read the request body, following the documented precedence.
-
-    ``--payload`` beats ``--input``, which beats piped stdin. An empty source
-    means no body at all, so a command in a pipeline does not send ``null``.
-
-    Raises:
-        UsageError: If the body is not valid JSON.
-    """
-    if payload is not None:
-        raw = payload
-    elif input_ref is not None:
-        raw = sys.stdin.read() if input_ref == "-" else Path(input_ref).read_text(encoding="utf-8")
-    elif not sys.stdin.isatty():
-        raw = sys.stdin.read()
-    else:
-        return None
-
-    if not raw.strip():
-        return None
-
-    try:
-        return json.loads(raw)
-    except json.JSONDecodeError as e:
-        raise UsageError(f"Invalid JSON request body: {e}") from None
 
 
 def _resolve_call(
@@ -128,7 +100,7 @@ def api_command(
     """
     ctx = get_context()
 
-    body = _read_request_body(payload, input_ref)
+    body = read_json_body(payload, input_ref)
     verb, target = _resolve_call(method_or_path, path, method_option, body is not None)
 
     client = ctx.client

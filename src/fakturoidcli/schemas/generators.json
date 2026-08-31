@@ -1,0 +1,130 @@
+{
+  "schema_version": 1,
+  "resource": "generators",
+  "captured_at": "2026-08-31",
+  "sources": [
+    "https://www.fakturoid.cz/api/v3/generators"
+  ],
+  "actions": {
+    "create": {
+      "endpoint": "POST /generators.json",
+      "summary": "Create an invoice template.",
+      "required": [
+        "name",
+        "subject_id"
+      ]
+    },
+    "update": {
+      "endpoint": "PATCH /generators/{id}.json",
+      "summary": "Update an invoice template.",
+      "required": []
+    }
+  },
+  "body": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "additionalProperties": true,
+    "properties": {
+      "name": {
+        "type": "string",
+        "description": "Template name, shown only inside Fakturoid."
+      },
+      "custom_id": {
+        "type": ["string", "null"],
+        "description": "Identifier in your own system."
+      },
+      "subject_id": {
+        "type": "integer",
+        "description": "Id of the customer this template bills."
+      },
+      "proforma": {
+        "type": ["boolean", "null"],
+        "description": "Generate a proforma instead of an invoice."
+      },
+      "paypal": {"type": ["boolean", "null"]},
+      "gopay": {"type": ["boolean", "null"]},
+      "tax_date_at_end_of_last_month": {
+        "type": ["boolean", "null"],
+        "description": "Set the date of taxable supply to the last day of the previous month."
+      },
+      "due": {
+        "type": ["integer", "null"],
+        "description": "Payment term in days."
+      },
+      "number_format_id": {
+        "type": ["integer", "null"],
+        "description": "Number format to draw the document number from."
+      },
+      "note": {"type": ["string", "null"]},
+      "footer_note": {"type": ["string", "null"]},
+      "bank_account_id": {
+        "type": ["integer", "null"],
+        "description": "Bank account to print. The default account is used when absent."
+      },
+      "iban_visibility": {
+        "enum": ["automatically", "always"]
+      },
+      "tags": {
+        "type": "array",
+        "items": {"type": "string"}
+      },
+      "order_number": {
+        "type": ["string", "null"],
+        "description": "Customer order number printed on the document."
+      },
+      "currency": {
+        "type": ["string", "null"],
+        "description": "ISO 4217 code, for example CZK. The account currency is used when absent."
+      },
+      "exchange_rate": {"type": ["string", "number", "null"]},
+      "payment_method": {
+        "enum": ["bank", "cash", "cod", "card", "paypal", "custom"]
+      },
+      "custom_payment_method": {
+        "type": ["string", "null"],
+        "description": "Free-text payment method, up to 20 characters, used when payment_method is custom."
+      },
+      "language": {
+        "enum": ["cz", "sk", "en", "de", "fr", "it", "es", "ru", "pl", "hu", "ro"]
+      },
+      "vat_price_mode": {
+        "enum": ["without_vat", "from_total_with_vat"],
+        "description": "Whether unit_price is read as a price before or after VAT."
+      },
+      "transferred_tax_liability": {"type": ["boolean", "null"]},
+      "supply_code": {
+        "type": ["string", "integer", "null"],
+        "description": "Supply code for transferred tax liability."
+      },
+      "oss": {
+        "enum": ["disabled", "service", "goods"],
+        "description": "One Stop Shop regime."
+      },
+      "round_total": {"type": ["boolean", "null"]},
+      "lines": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "id": {
+              "type": "integer",
+              "description": "Existing line to update."
+            },
+            "name": {"type": "string"},
+            "quantity": {"type": ["string", "number"]},
+            "unit_name": {"type": ["string", "null"]},
+            "unit_price": {"type": ["string", "number"]},
+            "vat_rate": {"type": ["integer", "number"]},
+            "inventory_item_id": {"type": ["integer", "null"]},
+            "sku": {"type": ["string", "null"]},
+            "_destroy": {
+              "type": "boolean",
+              "description": "Delete this line. Send it with the line id and nothing else."
+            }
+          }
+        }
+      }
+    }
+  }
+}

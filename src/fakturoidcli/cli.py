@@ -10,7 +10,14 @@ from typing import Annotated
 import typer
 
 from . import __version__
-from .commands import api_command
+from .commands import (
+    account_app,
+    api_command,
+    generators_app,
+    invoices_app,
+    subjects_app,
+    users_app,
+)
 from .context import get_context, parse_fields
 from .errors import ExitCode, FakturoidError, UsageError
 from .logging import setup_logging
@@ -23,6 +30,11 @@ app = typer.Typer(
     rich_markup_mode=None,
 )
 
+app.add_typer(users_app, name="users")
+app.add_typer(account_app, name="account")
+app.add_typer(subjects_app, name="subjects")
+app.add_typer(generators_app, name="generators")
+app.add_typer(invoices_app, name="invoices")
 app.command("api")(api_command)
 
 _ctx = get_context()

@@ -1,0 +1,189 @@
+{
+  "schema_version": 1,
+  "resource": "invoices",
+  "captured_at": "2026-08-31",
+  "sources": [
+    "https://www.fakturoid.cz/api/v3/invoices"
+  ],
+  "actions": {
+    "create": {
+      "endpoint": "POST /invoices.json",
+      "summary": "Create an invoice.",
+      "required": [
+        "subject_id"
+      ]
+    },
+    "update": {
+      "endpoint": "PATCH /invoices/{id}.json",
+      "summary": "Update an invoice.",
+      "required": []
+    }
+  },
+  "body": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "additionalProperties": true,
+    "properties": {
+      "custom_id": {
+        "type": ["string", "null"],
+        "description": "Identifier in your own system."
+      },
+      "subject_id": {
+        "type": "integer",
+        "description": "Id of the customer this invoice bills."
+      },
+      "document_type": {
+        "enum": ["partial_proforma", "proforma", "correction", "tax_document", "final_invoice", "invoice"],
+        "description": "Document type. Defaults to invoice."
+      },
+      "proforma": {
+        "type": "boolean",
+        "description": "Legacy proforma flag, absent from the v3 create docs. Prefer document_type: 'proforma'."
+      },
+      "proforma_followup_document": {
+        "enum": ["final_invoice_paid", "final_invoice", "tax_document", "none", null],
+        "description": "What to issue after a proforma is paid."
+      },
+      "tax_document_ids": {
+        "type": "array",
+        "items": {"type": "integer"},
+        "description": "Tax documents a final invoice is built from."
+      },
+      "correction_id": {
+        "type": ["integer", "null"],
+        "description": "Id of the invoice this correction corrects."
+      },
+      "number": {
+        "type": ["string", "null"],
+        "description": "Document number. The number format decides it when absent."
+      },
+      "number_format_id": {
+        "type": ["integer", "null"],
+        "description": "Number format to draw the document number from."
+      },
+      "variable_symbol": {
+        "type": ["string", "null"],
+        "description": "Payment variable symbol."
+      },
+      "client_name": {"type": ["string", "null"]},
+      "client_street": {"type": ["string", "null"]},
+      "client_city": {"type": ["string", "null"]},
+      "client_zip": {"type": ["string", "null"]},
+      "client_country": {"type": ["string", "null"]},
+      "client_registration_no": {"type": ["string", "null"]},
+      "client_vat_no": {"type": ["string", "null"]},
+      "client_local_vat_no": {"type": ["string", "null"]},
+      "client_has_delivery_address": {"type": ["boolean", "null"]},
+      "client_delivery_name": {"type": ["string", "null"]},
+      "client_delivery_street": {"type": ["string", "null"]},
+      "client_delivery_city": {"type": ["string", "null"]},
+      "client_delivery_zip": {"type": ["string", "null"]},
+      "client_delivery_country": {"type": ["string", "null"]},
+      "subject_custom_id": {"type": ["string", "null"]},
+      "order_number": {
+        "type": ["string", "null"],
+        "description": "Customer order number printed on the document."
+      },
+      "issued_on": {
+        "type": ["string", "null"],
+        "description": "Issue date, YYYY-MM-DD. Defaults to today."
+      },
+      "taxable_fulfillment_due": {
+        "type": ["string", "null"],
+        "description": "Date of taxable supply, YYYY-MM-DD."
+      },
+      "due": {
+        "type": ["integer", "null"],
+        "description": "Payment term in days."
+      },
+      "note": {"type": ["string", "null"]},
+      "footer_note": {"type": ["string", "null"]},
+      "private_note": {
+        "type": ["string", "null"],
+        "description": "Note visible only in Fakturoid, never on the document."
+      },
+      "tags": {
+        "type": "array",
+        "items": {"type": "string"}
+      },
+      "bank_account_id": {
+        "type": ["integer", "null"],
+        "description": "Bank account to print. The default account is used when absent."
+      },
+      "paypal": {"type": ["boolean", "null"]},
+      "gopay": {"type": ["boolean", "null"]},
+      "payment_method": {
+        "enum": ["bank", "cash", "cod", "card", "paypal", "custom"]
+      },
+      "custom_payment_method": {
+        "type": ["string", "null"],
+        "description": "Free-text payment method, used when payment_method is custom."
+      },
+      "hide_bank_account": {"type": ["boolean", "null"]},
+      "currency": {
+        "type": ["string", "null"],
+        "description": "ISO 4217 code, for example CZK. The account currency is used when absent."
+      },
+      "exchange_rate": {"type": ["string", "number", "null"]},
+      "language": {
+        "enum": ["cz", "sk", "en", "de", "fr", "it", "es", "ru", "pl", "hu", "ro"]
+      },
+      "transferred_tax_liability": {"type": ["boolean", "null"]},
+      "supply_code": {
+        "type": ["string", "integer", "null"],
+        "description": "Supply code for transferred tax liability."
+      },
+      "oss": {
+        "enum": ["disabled", "service", "goods"],
+        "description": "One Stop Shop regime."
+      },
+      "vat_price_mode": {
+        "enum": ["without_vat", "from_total_with_vat"],
+        "description": "Whether unit_price is read as a price before or after VAT."
+      },
+      "round_total": {"type": ["boolean", "null"]},
+      "iban_visibility": {
+        "enum": ["automatically", "always"]
+      },
+      "show_already_paid_note_in_pdf": {"type": ["boolean", "null"]},
+      "lines": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "id": {
+              "type": "integer",
+              "description": "Existing line to update. Never send a line id copied from a generator."
+            },
+            "name": {"type": "string"},
+            "quantity": {"type": ["string", "number"]},
+            "unit_name": {"type": ["string", "null"]},
+            "unit_price": {"type": ["string", "number"]},
+            "vat_rate": {"type": ["integer", "number"]},
+            "inventory_item_id": {"type": ["integer", "null"]},
+            "sku": {"type": ["string", "null"]},
+            "_destroy": {
+              "type": "boolean",
+              "description": "Delete this line. Send it with the line id and nothing else."
+            }
+          }
+        }
+      },
+      "attachments": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "filename": {"type": "string"},
+            "data_url": {
+              "type": "string",
+              "description": "Base64 Data URI, for example data:application/pdf;base64,..."
+            }
+          }
+        }
+      }
+    }
+  }
+}
