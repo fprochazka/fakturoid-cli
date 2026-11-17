@@ -6,7 +6,7 @@ readme = "README.md"
 authors = [
     { name = "Filip Procházka", email = "mr@fprochazka.cz" }
 ]
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 dependencies = [
     "httpx>=0.28.0",
     "jsonschema>=4.23.0",
@@ -30,7 +30,7 @@ package = true
 
 [tool.ruff]
 line-length = 120
-target-version = "py311"
+target-version = "py312"
 # The plan documents are prose, not source; their code blocks stay as written.
 extend-exclude = [".claude"]
 
@@ -40,11 +40,18 @@ select = ["E", "F", "I", "UP", "B", "C4", "SIM"]
 [tool.ruff.format]
 quote-style = "double"
 
+[tool.mypy]
+strict = true
+python_version = "3.12"
+files = ["src", "tests"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 
 [dependency-groups]
 dev = [
+    "mypy>=1.15",
     "pytest>=8.0.0",
     "ruff>=0.14.0",
+    "types-jsonschema>=4.23.0",
 ]

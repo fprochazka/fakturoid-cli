@@ -50,7 +50,7 @@ uv sync
 uv run fakturoid --help
 ```
 
-Python 3.11 or newer is required.
+Python 3.12 or newer is required.
 
 ## Configuration
 
@@ -669,6 +669,7 @@ integration/          bash script against a real account
 uv sync
 uv run ruff check .
 uv run ruff format --check .
+uv run mypy
 uv run pytest
 ```
 
