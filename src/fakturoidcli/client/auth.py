@@ -77,7 +77,7 @@ class TokenProvider:
             ) from e
 
         access_token = payload.get("access_token")
-        if not access_token:
+        if not isinstance(access_token, str) or not access_token:
             raise AuthenticationError(
                 "The token endpoint returned no access_token",
                 status_code=response.status_code,

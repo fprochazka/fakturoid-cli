@@ -19,4 +19,5 @@ FIXTURE_DIR = Path(__file__).parent / "fixtures"
 @pytest.fixture
 def generator() -> dict[str, Any]:
     """The body of GET /generators/{id}.json for a monthly invoice template."""
-    return json.loads((FIXTURE_DIR / "generator.json").read_text(encoding="utf-8"))
+    data: dict[str, Any] = json.loads((FIXTURE_DIR / "generator.json").read_text(encoding="utf-8"))
+    return data

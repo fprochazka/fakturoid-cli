@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import io
 import sys
+from collections.abc import Callable
+from pathlib import Path
 
 import pytest
 
@@ -26,7 +28,7 @@ class TerminalStdin(io.StringIO):
 
 
 @pytest.fixture
-def piped(monkeypatch):
+def piped(monkeypatch: pytest.MonkeyPatch) -> Callable[[str], None]:
     def attach(text: str) -> None:
         monkeypatch.setattr(sys, "stdin", PipedStdin(text))
 
@@ -34,64 +36,64 @@ def piped(monkeypatch):
 
 
 @pytest.fixture
-def interactive(monkeypatch):
+def interactive(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(sys, "stdin", TerminalStdin(""))
 
 
-def test_payload_option_is_parsed(interactive) -> None:
+def test_payload_option_is_parsed(interactive: None) -> None:
     assert read_json_body('{"note": "x"}') == {"note": "x"}
 
 
-def test_payload_option_beats_stdin(piped) -> None:
+def test_payload_option_beats_stdin(piped: Callable[[str], None]) -> None:
     piped('{"note": "from stdin"}')
 
     assert read_json_body('{"note": "from payload"}') == {"note": "from payload"}
 
 
-def test_input_file_is_read(tmp_path, interactive) -> None:
+def test_input_file_is_read(tmp_path: Path, interactive: None) -> None:
     path = tmp_path / "body.json"
     path.write_text('{"note": "from file"}', encoding="utf-8")
 
     assert read_json_body(None, str(path)) == {"note": "from file"}
 
 
-def test_input_dash_reads_stdin(piped) -> None:
+def test_input_dash_reads_stdin(piped: Callable[[str], None]) -> None:
     piped('{"note": "from stdin"}')
 
     assert read_json_body(None, "-") == {"note": "from stdin"}
 
 
-def test_piped_stdin_is_read_without_any_option(piped) -> None:
+def test_piped_stdin_is_read_without_any_option(piped: Callable[[str], None]) -> None:
     piped('{"note": "from stdin"}')
 
     assert read_json_body(None) == {"note": "from stdin"}
 
 
-def test_a_terminal_stdin_is_never_read(interactive) -> None:
+def test_a_terminal_stdin_is_never_read(interactive: None) -> None:
     assert read_json_body(None) is None
 
 
-def test_an_empty_pipe_means_no_body(piped) -> None:
+def test_an_empty_pipe_means_no_body(piped: Callable[[str], None]) -> None:
     piped("   \n")
 
     assert read_json_body(None) is None
 
 
-def test_invalid_json_is_a_usage_error(interactive) -> None:
+def test_invalid_json_is_a_usage_error(interactive: None) -> None:
     with pytest.raises(UsageError) as raised:
         read_json_body("{not json")
 
     assert "Invalid JSON" in str(raised.value)
 
 
-def test_a_required_body_that_is_absent_is_a_usage_error(interactive) -> None:
+def test_a_required_body_that_is_absent_is_a_usage_error(interactive: None) -> None:
     with pytest.raises(UsageError) as raised:
         require_json_body(None)
 
     assert "--payload" in str(raised.value)
 
 
-def test_a_required_body_reads_the_same_sources(piped) -> None:
+def test_a_required_body_reads_the_same_sources(piped: Callable[[str], None]) -> None:
     piped('{"note": "x"}')
 
     assert require_json_body(None) == {"note": "x"}

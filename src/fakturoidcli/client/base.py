@@ -217,7 +217,7 @@ class FakturoidClient:
     @staticmethod
     def is_json(response: httpx.Response) -> bool:
         """Report whether the response carries a JSON body."""
-        media_type = response.headers.get("content-type", "").split(";", 1)[0].strip().lower()
+        media_type: str = response.headers.get("content-type", "").split(";", 1)[0].strip().lower()
         return media_type.endswith("json")
 
     @staticmethod

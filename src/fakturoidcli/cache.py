@@ -81,7 +81,7 @@ def get_cached_token(profile: str, client_id: str) -> str | None:
 
     token = entry.get("access_token")
     expires_at = entry.get("expires_at")
-    if not token or not expires_at:
+    if not isinstance(token, str) or not token or not expires_at:
         return None
 
     try:

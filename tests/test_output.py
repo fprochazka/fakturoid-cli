@@ -15,6 +15,8 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
+import pytest
+
 from fakturoidcli.output import download_filename, output_json, write_download
 
 LONG_CZECH_TEXT = (
@@ -64,13 +66,13 @@ def test_narrow_columns_survive_a_long_array() -> None:
     assert json.loads(run_in_narrow_terminal(document)) == document
 
 
-def test_czech_text_is_not_escaped(capsys) -> None:
+def test_czech_text_is_not_escaped(capsys: pytest.CaptureFixture[str]) -> None:
     output_json({"name": "Vývoj software"})
 
     assert "Vývoj software" in capsys.readouterr().out
 
 
-def test_output_is_indented(capsys) -> None:
+def test_output_is_indented(capsys: pytest.CaptureFixture[str]) -> None:
     output_json({"a": 1})
 
     assert capsys.readouterr().out == '{\n  "a": 1\n}\n'
@@ -88,7 +90,7 @@ def test_download_filename_falls_back_to_bin() -> None:
     assert name.endswith(".bin")
 
 
-def test_download_descriptor_is_the_only_thing_on_stdout(tmp_path, capsys) -> None:
+def test_download_descriptor_is_the_only_thing_on_stdout(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
     descriptor = write_download(
         b"%PDF-1.4 ...", resource="invoice", identifier="1", content_type="application/pdf", output_dir=tmp_path
     )
@@ -100,7 +102,7 @@ def test_download_descriptor_is_the_only_thing_on_stdout(tmp_path, capsys) -> No
     assert Path(descriptor["path"]).read_bytes() == b"%PDF-1.4 ..."
 
 
-def test_downloaded_files_are_readable_only_by_their_owner(tmp_path) -> None:
+def test_downloaded_files_are_readable_only_by_their_owner(tmp_path: Path) -> None:
     descriptor = write_download(
         b"x", resource="invoice", identifier="1", content_type="application/pdf", output_dir=tmp_path / "nested"
     )

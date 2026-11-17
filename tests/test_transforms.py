@@ -5,6 +5,8 @@ from __future__ import annotations
 
 from typing import Any
 
+import pytest
+
 from fakturoidcli.transforms import GENERATOR_LINE_FIELDS, generator_to_invoice_payload
 from fakturoidcli.validation import load_schema, validate_payload
 
@@ -119,7 +121,7 @@ def test_output_validates_against_the_invoice_create_schema(generator: dict[str,
     validate_payload(generator_to_invoice_payload(generator), load_schema("invoices", "create"))
 
 
-def test_output_raises_no_unknown_field_warning(generator: dict[str, Any], capsys) -> None:
+def test_output_raises_no_unknown_field_warning(generator: dict[str, Any], capsys: pytest.CaptureFixture[str]) -> None:
     validate_payload(generator_to_invoice_payload(generator), load_schema("invoices", "create"))
 
     assert capsys.readouterr().err == ""

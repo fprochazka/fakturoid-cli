@@ -24,7 +24,7 @@ def test_every_write_action_has_a_schema(resource: str, action: str) -> None:
     assert schema.schema["additionalProperties"] is True
 
 
-def test_valid_invoice_payload_passes(capsys) -> None:
+def test_valid_invoice_payload_passes(capsys: pytest.CaptureFixture[str]) -> None:
     payload = {
         "subject_id": 55000123,
         "due": 14,
@@ -79,14 +79,14 @@ def test_missing_required_field_fails() -> None:
     assert "subject_id" in str(raised.value)
 
 
-def test_unknown_field_passes_with_exactly_one_warning(capsys) -> None:
+def test_unknown_field_passes_with_exactly_one_warning(capsys: pytest.CaptureFixture[str]) -> None:
     validate_payload({"subject_id": 1, "subject_di": 2}, load_schema("invoices", "create"))
 
     warnings = capsys.readouterr().err.strip().splitlines()
     assert warnings == ["warning: 'subject_di' is not a known field for POST /invoices.json - sending it anyway"]
 
 
-def test_unknown_field_inside_a_line_is_reported_with_its_position(capsys) -> None:
+def test_unknown_field_inside_a_line_is_reported_with_its_position(capsys: pytest.CaptureFixture[str]) -> None:
     payload = {"subject_id": 1, "lines": [{"name": "ok", "unit_pric": "1.0"}]}
 
     validate_payload(payload, load_schema("invoices", "create"))
@@ -96,7 +96,7 @@ def test_unknown_field_inside_a_line_is_reported_with_its_position(capsys) -> No
     assert "lines[0].unit_pric" in warnings[0]
 
 
-def test_patch_accepts_a_single_field(capsys) -> None:
+def test_patch_accepts_a_single_field(capsys: pytest.CaptureFixture[str]) -> None:
     validate_payload({"note": "September"}, load_schema("invoices", "update"))
     validate_payload({"name": "ZZZ test template"}, load_schema("generators", "update"))
 
